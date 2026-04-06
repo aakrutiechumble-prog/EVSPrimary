@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Habitats Explorer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .slide {
+      display: none;
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .title {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 18px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      z-index: 5;
+      text-align: center;
+      min-width: 180px;
+    }
+
+    .animal {
+      position: absolute;
+      width: 90px;
+      max-width: 18vw;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      z-index: 4;
+      user-select: none;
+    }
+
+    .animal:hover,
+    .animal:active {
+      transform: scale(1.08);
+    }
+
+    .navBtn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 54px;
+      height: 54px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.45);
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .navBtn:hover {
+      background: rgba(0, 0, 0, 0.65);
+    }
+
+    .nav-left {
+      left: 14px;
+    }
+
+    .nav-right {
+      right: 14px;
+    }
+
+    .habitatInfo {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.62);
+      color: #fff;
+      padding: 14px 16px 18px;
+      font-size: 1rem;
+      text-align: center;
+      z-index: 5;
+      line-height: 1.4;
+    }
+
+    .popup {
+      position: absolute;
+      left: 50%;
+      top: 18%;
+      transform: translateX(-50%);
+      width: min(88vw, 460px);
+      background: rgba(255, 255, 255, 0.96);
+      color: #222;
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+      z-index: 10;
+      display: none;
+      text-align: left;
+    }
+
+    .popup h3 {
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+      color: #1f3d5c;
+    }
+
+    .popup p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .closeBtn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      border: none;
+      background: transparent;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #444;
+    }
+
+    .hint {
+      position: absolute;
+      top: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.85);
+      color: #1d3557;
+      padding: 8px 14px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      z-index: 5;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .title {
+        font-size: 1.2rem;
+        top: 14px;
+        padding: 8px 14px;
+      }
+
+      .hint {
+        top: 60px;
+        font-size: 0.82rem;
+        width: 82vw;
+      }
+
+      .animal {
+        width: 72px;
+      }
+
+      .navBtn {
+        width: 46px;
+        height: 46px;
+        font-size: 1.4rem;
+      }
+
+      .habitatInfo {
+        font-size: 0.92rem;
+        padding: 12px 14px 16px;
+      }
+
+      .popup {
+        top: 16%;
+        width: 90vw;
+        padding: 16px 16px 14px;
+      }
+
+      .popup h3 {
+        font-size: 1.15rem;
+      }
+
+      .popup p {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body onclick="unlockAudioOnce()">
+
+  <!-- FOREST -->
+  <section class="slide active" id="slide0">
+    <img src="assets/forest-ambience.png" alt="Forest habitat" class="bg" />
+    <div class="title">Forest Habitat</div>
+    <div class="hint">Tap an animal to learn about it</div>
+
+    <img src="assets/tiger.png" alt="Tiger" class="animal"
+      style="left: 12%; top: 56%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Tiger', 'Tigers have striped fur that helps them hide among forest shadows and tall grass. Their strong legs and sharp teeth help them hunt for food.', 'assets/tiger.mp3')">
+
+    <img src="assets/monkey.png" alt="Monkey" class="animal"
+      style="left: 38%; top: 34%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Monkey', 'Monkeys use their strong arms, hands, and tails to swing through trees. Living high above the ground helps them find fruits and stay safer from danger.', 'assets/monkey.mp3')">
+
+    <img src="assets/owl.png" alt="Owl" class="animal"
+      style="left: 70%; top: 22%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Owl', 'Owls have big eyes for seeing in dim light and soft feathers that help them fly quietly. This helps them hunt at night in forests.', 'assets/owl.mp3')">
+
+    <div class="habitatInfo">
+      Forests are rich in trees, plants, and rainfall. Many animals live here by climbing, hiding, or hunting among the trees and leaves.
+    </div>
+  </section>
+
+  <!-- DESERT -->
+  <section class="slide" id="slide1">
+    <img src="assets/desert-ambience.png" alt="Desert habitat" class="bg" />
+    <div class="title">Desert Habitat</div>
+    <div class="hint">Tap an animal to learn about it</div>
+
+    <img src="assets/camel.png" alt="Camel" class="animal"
+      style="left: 12%; top: 52%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Camel', 'Camels can live in very hot places. Their bodies save water well, and their broad feet help them walk easily on soft desert sand.', 'assets/camel.mp3')">
+
+    <img src="assets/fennec.png" alt="Fennec Fox" class="animal"
+      style="left: 43%; top: 50%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Fennec Fox', 'The fennec fox has very large ears that help release body heat. Its light-coloured fur helps it blend into the desert and stay cooler.', 'assets/fennec.mp3')">
+
+    <img src="assets/snake.png" alt="Snake" class="animal"
+      style="left: 72%; top: 62%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Snake', 'Desert snakes can move smoothly over hot sand. Their bodies help them hide well, and they need less water than many other animals.', 'assets/snake.mp3')">
+
+    <div class="habitatInfo">
+      Deserts are hot, dry places with very little water. Animals here are adapted to save water, stay cool, and move across sand.
+    </div>
+  </section>
+
+  <!-- OCEAN -->
+  <section class="slide" id="slide2">
+    <img src="assets/ocean-ambience.png" alt="Ocean habitat" class="bg" />
+    <div class="title">Ocean Habitat</div>
+    <div class="hint">Tap an animal to learn about it</div>
+
+    <img src="assets/dolphin.png" alt="Dolphin" class="animal"
+      style="left: 14%; top: 34%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Dolphin', 'Dolphins have streamlined bodies that help them swim quickly. They use sounds to communicate and find their way in the water.', 'assets/dolphin.mp3')">
+
+    <img src="assets/fish.png" alt="Fish" class="animal"
+      style="left: 42%; top: 58%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Fish', 'Fish breathe through gills and use fins to swim. Their bodies are made for living fully in water.', null)">
+
+    <img src="assets/octopus.png" alt="Octopus" class="animal"
+      style="left: 72%; top: 50%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Octopus', 'An octopus can change its colour and texture to hide. Its soft body helps it squeeze into small spaces in the ocean.', null)">
+
+    <div class="habitatInfo">
+      Oceans are huge water habitats filled with marine life. Animals here are adapted to swim, breathe in water, and survive in deep or shallow seas.
+    </div>
+  </section>
+
+  <!-- POLAR -->
+  <section class="slide" id="slide3">
+    <img src="assets/polar-ambience.png" alt="Polar habitat" class="bg" />
+    <div class="title">Polar Habitat</div>
+    <div class="hint">Tap an animal to learn about it</div>
+
+    <img src="assets/polarbear.png" alt="Polar Bear" class="animal"
+      style="left: 12%; top: 48%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Polar Bear', 'Polar bears have thick fur and a layer of fat called blubber to keep them warm. Their big paws help them walk on ice and swim in icy water.', 'assets/polarbear.mp3')">
+
+    <img src="assets/penguin.png" alt="Penguin" class="animal"
+      style="left: 46%; top: 58%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Penguin', 'Penguins have waterproof feathers and blubber to stay warm. Their bodies help them swim strongly through cold water.', 'assets/penguin.mp3')">
+
+    <img src="assets/seal.png" alt="Seal" class="animal"
+      style="left: 74%; top: 52%;"
+      onclick="event.stopPropagation(); showAnimalInfo('Seal', 'Seals have a thick layer of fat that keeps them warm in freezing water. Their flippers help them swim and move on ice.', 'assets/seal.mp3')">
+
+    <div class="habitatInfo">
+      Polar regions are extremely cold and icy. Animals here have thick fur, feathers, or blubber to help them stay warm.
+    </div>
+  </section>
+
+  <!-- NAVIGATION -->
+  <button class="navBtn nav-left" onclick="event.stopPropagation(); prevSlide()">&#10094;</button>
+  <button class="navBtn nav-right" onclick="event.stopPropagation(); nextSlide()">&#10095;</button>
+
+  <!-- POPUP -->
+  <div class="popup" id="popupBox">
+    <button class="closeBtn" onclick="closePopup()">✕</button>
+    <h3 id="popupTitle"></h3>
+    <p id="popupText"></p>
+  </div>
+
+  <!-- AUDIO -->
+  <audio id="bgSound" loop></audio>
+  <audio id="animalSound"></audio>
+
+  <script>
+    const slides = document.querySelectorAll(".slide");
+    let currentSlide = 0;
+    let audioUnlocked = false;
+
+    const ambienceFiles = [
+      "assets/forest-ambience.mp3",
+      "assets/desert-ambience.mp3",
+      "assets/ocean-ambience.mp3",
+      "assets/polar-ambience.mp3"
+    ];
+
+    const bgSound = document.getElementById("bgSound");
+    const animalSound = document.getElementById("animalSound");
+
+    function unlockAudioOnce() {
+      if (!audioUnlocked) {
+        audioUnlocked = true;
+        playAmbience(currentSlide);
+      }
+    }
+
+    function showSlide(index) {
+      slides.forEach(slide => slide.classList.remove("active"));
+      slides[index].classList.add("active");
+      closePopup(false);
+      playAmbience(index);
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    function playAmbience(index) {
+      if (!audioUnlocked) return;
+
+      bgSound.pause();
+      bgSound.currentTime = 0;
+      bgSound.src = ambienceFiles[index];
+      bgSound.volume = 0.4;
+      bgSound.play().catch(() => {});
+    }
+
+    function showAnimalInfo(name, info, soundFile) {
+      const popup = document.getElementById("popupBox");
+      const title = document.getElementById("popupTitle");
+      const text = document.getElementById("popupText");
+
+      title.textContent = name;
+      text.textContent = info;
+      popup.style.display = "block";
+
+      animalSound.pause();
+      animalSound.currentTime = 0;
+      animalSound.onended = null;
+
+      if (soundFile) {
+        bgSound.volume = 0.12;
+        animalSound.src = soundFile;
+        animalSound.volume = 1.0;
+        animalSound.play().catch(() => {});
+
+        animalSound.onended = function () {
+          bgSound.volume = 0.4;
+        };
+      }
+    }
+
+    function closePopup(resetVolume = true) {
+      document.getElementById("popupBox").style.display = "none";
+      animalSound.pause();
+      animalSound.currentTime = 0;
+      animalSound.onended = null;
+
+      if (resetVolume) {
+        bgSound.volume = 0.4;
+      }
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "ArrowRight") nextSlide();
+      if (e.key === "ArrowLeft") prevSlide();
+      if (e.key === "Escape") closePopup();
+    });
+
+    window.onload = function () {
+      showSlide(currentSlide);
+    };
+  </script>
+</body>
+</html>
