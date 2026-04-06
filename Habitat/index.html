@@ -4,23 +4,230 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Habitats Explorer</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      background: #000;
+      background: #0b1b2b;
       overflow-x: hidden;
       overflow-y: auto;
     }
 
     body {
       min-height: 100vh;
+      color: #fff;
+    }
+
+    .screen {
+      display: none;
+      position: relative;
+      width: 100vw;
+      min-height: 100vh;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .fullBg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 2;
+    }
+
+    .content {
+      position: relative;
+      z-index: 3;
+    }
+
+    .centerCard {
+      width: min(92vw, 760px);
+      margin: 0 auto;
+      background: rgba(255,255,255,0.94);
+      color: #17324b;
+      border-radius: 22px;
+      padding: 22px 20px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.24);
+    }
+
+    .mainBtn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      background: #1f4f82;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .mainBtn:hover {
+      background: #2b649f;
+    }
+
+    .introGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      width: 100vw;
+      min-height: 100vh;
+    }
+
+    .introTile {
+      position: relative;
+      overflow: hidden;
+      min-height: 50vh;
+    }
+
+    .introTile img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .introTile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.22);
+    }
+
+    .introCardWrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 5;
+    }
+
+    .introTitle {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 0 0 12px;
+      text-align: center;
+    }
+
+    .introText {
+      font-size: 1rem;
+      line-height: 1.55;
+      margin: 0 0 16px;
+      text-align: center;
+    }
+
+    .levelsWrap {
+      min-height: 100vh;
+      padding: 28px 16px 34px;
+      background: linear-gradient(180deg, #12324d 0%, #0f2236 100%);
+    }
+
+    .levelsTitle {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 4px 0 10px;
+    }
+
+    .levelsSub {
+      text-align: center;
+      font-size: 1rem;
+      opacity: 0.92;
+      margin: 0 0 22px;
+    }
+
+    .levelsGrid {
+      width: min(96vw, 980px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .levelCard {
+      position: relative;
+      min-height: 190px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.24);
+      cursor: pointer;
+      background: #274b69;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .levelCard:hover {
+      transform: translateY(-3px);
+    }
+
+    .levelCard.locked {
+      cursor: not-allowed;
+      opacity: 0.78;
+    }
+
+    .levelCard img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .levelShade {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+    }
+
+    .levelInfo {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .levelName {
+      font-size: 1.35rem;
+      font-weight: bold;
+    }
+
+    .levelState {
+      font-size: 0.98rem;
+      background: rgba(0,0,0,0.45);
+      align-self: flex-start;
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    .lockIcon {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      z-index: 4;
+      font-size: 2rem;
+      background: rgba(0,0,0,0.45);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .slide {
@@ -28,8 +235,9 @@
       position: relative;
       width: 100vw;
       min-height: 100vh;
-      padding-bottom: 155px;
+      padding-bottom: 145px;
       overflow: hidden;
+      background: #000;
     }
 
     .slide.active {
@@ -45,72 +253,60 @@
       z-index: 1;
     }
 
-    .dimOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.42);
-      z-index: 24;
-      display: none;
-    }
-
-    .title {
+    .slideTopBar {
       position: absolute;
-      top: 16px;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.55);
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 18px;
-      font-size: 1.45rem;
-      font-weight: bold;
+      width: min(94vw, 760px);
       z-index: 10;
+      display: grid;
+      gap: 10px;
+    }
+
+    .titleBox {
+      background: rgba(0,0,0,0.58);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 18px;
       text-align: center;
-      min-width: 210px;
+      font-size: 1.35rem;
+      font-weight: bold;
     }
 
     .challengeBox {
-      position: absolute;
-      top: 70px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(92vw, 620px);
-      background: rgba(255, 255, 255, 0.92);
-      color: #16324f;
+      background: rgba(255,255,255,0.94);
+      color: #17324b;
       border-radius: 16px;
       padding: 10px 14px;
-      z-index: 10;
       text-align: center;
-      font-size: 0.96rem;
+      font-size: 0.98rem;
       line-height: 1.4;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.16);
     }
 
     .progressBox {
-      position: absolute;
-      top: 128px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0,0,0,0.62);
       color: #fff;
-      padding: 8px 14px;
       border-radius: 14px;
-      z-index: 10;
-      font-size: 0.9rem;
-      min-width: 180px;
+      padding: 8px 14px;
       text-align: center;
+      font-size: 0.9rem;
+      width: fit-content;
+      margin: 0 auto;
+      min-width: 180px;
     }
 
     .feedbackBox {
       position: absolute;
-      top: 172px;
+      top: 170px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(155, 28, 28, 0.92);
+      background: rgba(155, 28, 28, 0.94);
       color: #fff;
       padding: 8px 14px;
       border-radius: 14px;
-      z-index: 10;
+      z-index: 12;
       font-size: 0.9rem;
       min-width: 220px;
       text-align: center;
@@ -119,8 +315,8 @@
 
     .animal {
       position: absolute;
-      width: 96px;
-      max-width: 20vw;
+      width: 102px;
+      max-width: 22vw;
       cursor: pointer;
       z-index: 10;
       user-select: none;
@@ -135,11 +331,11 @@
     .animal:hover,
     .animal:active {
       transform: scale(1.08);
-      filter: drop-shadow(0 0 6px rgba(255,255,255,0.65));
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.7));
     }
 
     .animal.spotlight {
-      z-index: 26 !important;
+      z-index: 25 !important;
       transform: scale(1.16);
       filter: drop-shadow(0 0 10px rgba(255,255,255,0.95));
     }
@@ -155,7 +351,7 @@
       height: 44px;
       border-radius: 50%;
       border: 3px dashed rgba(255,255,255,0.95);
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
       z-index: 11;
       display: none;
       pointer-events: none;
@@ -163,43 +359,22 @@
     }
 
     @keyframes pulseRing {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
+      0%, 100% { transform: scale(1); opacity: 0.82; }
       50% { transform: scale(1.12); opacity: 1; }
     }
 
-    .navBtn {
+    .homeBtn {
       position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 52px;
-      height: 52px;
+      top: 16px;
+      left: 14px;
+      z-index: 22;
       border: none;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.52);
-      color: white;
-      font-size: 1.7rem;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
       cursor: pointer;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .navBtn:hover {
-      background: rgba(0, 0, 0, 0.7);
-    }
-
-    .nav-left {
-      left: 12px;
-    }
-
-    .nav-right {
-      right: 12px;
-    }
-
-    .navBtn.locked {
-      opacity: 0.35;
-      cursor: not-allowed;
+      font-size: 0.95rem;
     }
 
     .habitatInfo {
@@ -207,7 +382,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.68);
+      background: rgba(0,0,0,0.68);
       color: #fff;
       padding: 14px 16px 18px;
       padding-bottom: calc(18px + env(safe-area-inset-bottom));
@@ -217,32 +392,42 @@
       line-height: 1.45;
     }
 
-    .popup {
+    .dimOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.42);
+      z-index: 24;
+      display: none;
+    }
+
+    .popup, .quizBox, .passBox {
       position: fixed;
       left: 50%;
-      top: 14%;
       transform: translateX(-50%);
-      width: min(88vw, 470px);
-      background: rgba(255, 255, 255, 0.98);
-      color: #222;
-      border-radius: 18px;
+      width: min(90vw, 500px);
+      background: rgba(255,255,255,0.98);
+      color: #17324b;
+      border-radius: 20px;
       padding: 18px 18px 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       z-index: 30;
       display: none;
       text-align: left;
-      max-height: 60vh;
-      overflow-y: auto;
     }
 
-    .popup h3 {
+    .popup { top: 14%; max-height: 60vh; overflow-y: auto; }
+    .quizBox { top: 16%; }
+    .passBox {
+      top: 22%;
+      text-align: center;
+    }
+
+    .popup h3, .quizBox h3, .passBox h3 {
       margin: 0 0 8px;
-      font-size: 1.25rem;
-      color: #1f3d5c;
-      padding-right: 24px;
+      font-size: 1.24rem;
     }
 
-    .popup p {
+    .popup p, .quizBox p, .passBox p {
       margin: 0;
       font-size: 1rem;
       line-height: 1.5;
@@ -257,26 +442,6 @@
       font-size: 1.35rem;
       cursor: pointer;
       color: #444;
-    }
-
-    .quizBox {
-      position: fixed;
-      left: 50%;
-      top: 16%;
-      transform: translateX(-50%);
-      width: min(92vw, 520px);
-      background: rgba(255,255,255,0.98);
-      color: #16324f;
-      border-radius: 18px;
-      padding: 18px 18px 16px;
-      z-index: 32;
-      display: none;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.28);
-    }
-
-    .quizBox h3 {
-      margin: 0 0 8px;
-      font-size: 1.2rem;
     }
 
     .quizOptions {
@@ -305,42 +470,56 @@
       font-weight: bold;
     }
 
-    .unlockBanner {
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: rgba(31,61,92,0.95);
-      color: #fff;
-      padding: 12px 18px;
-      border-radius: 18px;
-      z-index: 35;
-      display: none;
-      font-size: 0.95rem;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.24);
-    }
-
     @media (max-width: 768px) {
+      .introGrid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 28vh);
+        min-height: auto;
+      }
+
+      .introTile {
+        min-height: 28vh;
+      }
+
+      .introCardWrap {
+        padding: 14px;
+      }
+
+      .introTitle {
+        font-size: 1.4rem;
+      }
+
+      .introText {
+        font-size: 0.92rem;
+      }
+
+      .levelsGrid {
+        grid-template-columns: 1fr;
+      }
+
+      .levelCard {
+        min-height: 170px;
+      }
+
       .slide {
         min-height: 100dvh;
-        padding-bottom: 165px;
+        padding-bottom: 160px;
       }
 
-      .title {
-        font-size: 1.16rem;
-        top: 14px;
-        padding: 8px 14px;
-      }
-
-      .challengeBox {
-        top: 60px;
-        font-size: 0.84rem;
+      .slideTopBar {
+        top: 12px;
         width: 92vw;
       }
 
+      .titleBox {
+        font-size: 1.14rem;
+      }
+
+      .challengeBox {
+        font-size: 0.84rem;
+      }
+
       .progressBox {
-        top: 116px;
         font-size: 0.82rem;
       }
 
@@ -351,7 +530,7 @@
       }
 
       .animal {
-        width: 78px;
+        width: 80px;
       }
 
       .helperRing {
@@ -359,28 +538,14 @@
         height: 38px;
       }
 
-      .navBtn {
-        width: 46px;
-        height: 46px;
-        font-size: 1.4rem;
+      .popup, .quizBox, .passBox {
+        width: 92vw;
       }
 
       .habitatInfo {
         font-size: 0.9rem;
         padding: 14px 14px 22px;
         padding-bottom: calc(22px + env(safe-area-inset-bottom));
-      }
-
-      .popup {
-        top: 11%;
-        width: 90vw;
-        max-height: 52vh;
-        padding: 16px 16px 14px;
-      }
-
-      .quizBox {
-        top: 12%;
-        width: 92vw;
       }
     }
   </style>
@@ -389,26 +554,99 @@
 
   <div class="dimOverlay" id="dimOverlay" onclick="closePopup(); closeQuiz();"></div>
 
-  <!-- FOREST -->
-  <section class="slide active" id="slide0">
-    <img src="assets/forest-ambience.png" alt="Forest habitat" class="bg" />
-    <div class="title">Forest Habitat</div>
-    <div class="challengeBox" id="challenge0"></div>
-    <div class="progressBox" id="progress0">Animals found: 0 / 3</div>
-    <div class="feedbackBox" id="feedback0">Wrong answer - try again</div>
+  <!-- INTRO SCREEN -->
+  <section class="screen active" id="introScreen">
+    <div class="introGrid">
+      <div class="introTile"><img src="assets/forest-ambience.png" alt="Forest"></div>
+      <div class="introTile"><img src="assets/desert-ambience.png" alt="Desert"></div>
+      <div class="introTile"><img src="assets/ocean-ambience.jpg" alt="Ocean"></div>
+      <div class="introTile"><img src="assets/polar-ambience.jpg" alt="Polar"></div>
+    </div>
+    <div class="introCardWrap">
+      <div class="centerCard">
+        <h1 class="introTitle">What is a Habitat?</h1>
+        <p class="introText">
+          A habitat is the natural home of a plant or animal. Different habitats have different weather, land, water, plants, and food. Over time, animals develop special body features and behaviours that help them survive in their habitat. These special survival features are called adaptations.
+        </p>
+        <div style="text-align:center;">
+          <button class="mainBtn" onclick="goToLevelSelect()">Start Exploring</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- LEVEL SELECT -->
+  <section class="screen" id="levelSelect">
+    <div class="levelsWrap">
+      <div class="levelsTitle">Choose a Habitat Level</div>
+      <div class="levelsSub">Complete one habitat to unlock the next.</div>
+
+      <div class="levelsGrid">
+        <div class="levelCard" id="levelCard0" onclick="openHabitat(0)">
+          <img src="assets/forest-ambience.png" alt="Forest">
+          <div class="levelShade"></div>
+          <div class="levelInfo">
+            <div class="levelName">Forest</div>
+            <div class="levelState" id="levelState0">Unlocked</div>
+          </div>
+        </div>
+
+        <div class="levelCard locked" id="levelCard1" onclick="openHabitat(1)">
+          <img src="assets/desert-ambience.png" alt="Desert">
+          <div class="levelShade"></div>
+          <div class="lockIcon" id="lock1">🔒</div>
+          <div class="levelInfo">
+            <div class="levelName">Desert</div>
+            <div class="levelState" id="levelState1">Locked</div>
+          </div>
+        </div>
+
+        <div class="levelCard locked" id="levelCard2" onclick="openHabitat(2)">
+          <img src="assets/ocean-ambience.jpg" alt="Ocean">
+          <div class="levelShade"></div>
+          <div class="lockIcon" id="lock2">🔒</div>
+          <div class="levelInfo">
+            <div class="levelName">Ocean</div>
+            <div class="levelState" id="levelState2">Locked</div>
+          </div>
+        </div>
+
+        <div class="levelCard locked" id="levelCard3" onclick="openHabitat(3)">
+          <img src="assets/polar-ambience.jpg" alt="Polar">
+          <div class="levelShade"></div>
+          <div class="lockIcon" id="lock3">🔒</div>
+          <div class="levelInfo">
+            <div class="levelName">Polar</div>
+            <div class="levelState" id="levelState3">Locked</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <button class="homeBtn" id="homeBtn" style="display:none;" onclick="goToLevelSelect()">← Levels</button>
+
+  <!-- HABITAT SLIDES -->
+  <section class="slide" id="slide0">
+    <img src="assets/forest-ambience.png" alt="Forest habitat" class="bg" />
+    <div class="slideTopBar">
+      <div class="titleBox">Forest Habitat</div>
+      <div class="challengeBox" id="challenge0"></div>
+      <div class="progressBox" id="progress0">Animals found: 0 / 3</div>
+    </div>
+    <div class="feedbackBox" id="feedback0">Wrong answer - try again</div>
     <div class="helperRing" id="ring0"></div>
 
     <img src="assets/tiger.png" alt="Tiger" id="animal-0-Tiger" class="animal"
-      style="left: 12%; bottom: 108px;"
+      style="left:12%; bottom:108px;"
       onclick="event.stopPropagation(); handleAnimalTap(0, 'Tiger', this, 'Tigers have striped fur that helps them hide among forest shadows and tall grass. Their strong legs and sharp teeth help them hunt for food.', 'assets/tiger.mp3', 1.8)">
 
     <img src="assets/monkey.png" alt="Monkey" id="animal-0-Monkey" class="animal"
-      style="left: 38%; top: 42%;"
+      style="left:38%; top:42%;"
       onclick="event.stopPropagation(); handleAnimalTap(0, 'Monkey', this, 'Monkeys use their strong arms, hands, and tails to swing through trees. Living high above the ground helps them find fruits and stay safer from danger.', 'assets/monkey.mp3', 1.8)">
 
     <img src="assets/owl.png" alt="Owl" id="animal-0-Owl" class="animal"
-      style="left: 70%; top: 22%;"
+      style="left:70%; top:22%;"
       onclick="event.stopPropagation(); handleAnimalTap(0, 'Owl', this, 'Owls have big eyes for seeing in dim light and soft feathers that help them fly quietly. This helps them hunt at night in forests.', 'assets/owl.mp3', 1.9)">
 
     <div class="habitatInfo">
@@ -416,26 +654,26 @@
     </div>
   </section>
 
-  <!-- DESERT -->
   <section class="slide" id="slide1">
     <img src="assets/desert-ambience.png" alt="Desert habitat" class="bg" loading="lazy" />
-    <div class="title">Desert Habitat</div>
-    <div class="challengeBox" id="challenge1"></div>
-    <div class="progressBox" id="progress1">Animals found: 0 / 3</div>
+    <div class="slideTopBar">
+      <div class="titleBox">Desert Habitat</div>
+      <div class="challengeBox" id="challenge1"></div>
+      <div class="progressBox" id="progress1">Animals found: 0 / 3</div>
+    </div>
     <div class="feedbackBox" id="feedback1">Wrong answer - try again</div>
-
     <div class="helperRing" id="ring1"></div>
 
     <img src="assets/camel.png" alt="Camel" id="animal-1-Camel" class="animal"
-      style="left: 12%; bottom: 110px;"
+      style="left:12%; bottom:110px;"
       onclick="event.stopPropagation(); handleAnimalTap(1, 'Camel', this, 'Camels can live in very hot places. Their bodies save water well, and their broad feet help them walk easily on soft desert sand.', 'assets/camel.mp3', 3.2)">
 
     <img src="assets/fennec.png" alt="Fennec Fox" id="animal-1-Fennec Fox" class="animal"
-      style="left: 44%; bottom: 112px;"
+      style="left:44%; bottom:112px;"
       onclick="event.stopPropagation(); handleAnimalTap(1, 'Fennec Fox', this, 'The fennec fox has very large ears that help release body heat. Its light-coloured fur helps it blend into the desert and stay cooler.', 'assets/fennec.mp3', 1.9)">
 
     <img src="assets/snake.png" alt="Snake" id="animal-1-Snake" class="animal"
-      style="left: 72%; bottom: 112px;"
+      style="left:72%; bottom:112px;"
       onclick="event.stopPropagation(); handleAnimalTap(1, 'Snake', this, 'Desert snakes can move smoothly over hot sand. Their bodies help them hide well, and they need less water than many other animals.', 'assets/snake.mp3', 1.9)">
 
     <div class="habitatInfo">
@@ -443,26 +681,26 @@
     </div>
   </section>
 
-  <!-- OCEAN -->
   <section class="slide" id="slide2">
     <img src="assets/ocean-ambience.jpg" alt="Ocean habitat" class="bg" loading="lazy" />
-    <div class="title">Ocean Habitat</div>
-    <div class="challengeBox" id="challenge2"></div>
-    <div class="progressBox" id="progress2">Animals found: 0 / 3</div>
+    <div class="slideTopBar">
+      <div class="titleBox">Ocean Habitat</div>
+      <div class="challengeBox" id="challenge2"></div>
+      <div class="progressBox" id="progress2">Animals found: 0 / 3</div>
+    </div>
     <div class="feedbackBox" id="feedback2">Wrong answer - try again</div>
-
     <div class="helperRing" id="ring2"></div>
 
     <img src="assets/dolphin.png" alt="Dolphin" id="animal-2-Dolphin" class="animal"
-      style="left: 14%; top: 36%;"
+      style="left:14%; top:36%;"
       onclick="event.stopPropagation(); handleAnimalTap(2, 'Dolphin', this, 'Dolphins have streamlined bodies that help them swim quickly. They use sounds to communicate and find their way in the water.', 'assets/dolphin.mp3', 2.0)">
 
     <img src="assets/fish.png" alt="Fish" id="animal-2-Fish" class="animal"
-      style="left: 42%; top: 60%;"
+      style="left:42%; top:60%;"
       onclick="event.stopPropagation(); handleAnimalTap(2, 'Fish', this, 'Fish breathe through gills and use fins to swim. Their bodies are made for living fully in water.', null, 1)">
 
     <img src="assets/octopus.png" alt="Octopus" id="animal-2-Octopus" class="animal"
-      style="left: 72%; bottom: 122px;"
+      style="left:72%; bottom:122px;"
       onclick="event.stopPropagation(); handleAnimalTap(2, 'Octopus', this, 'An octopus can change its colour and texture to hide. Its soft body helps it squeeze into small spaces in the ocean.', null, 1)">
 
     <div class="habitatInfo">
@@ -470,35 +708,32 @@
     </div>
   </section>
 
-  <!-- POLAR -->
   <section class="slide" id="slide3">
     <img src="assets/polar-ambience.jpg" alt="Polar habitat" class="bg" loading="lazy" />
-    <div class="title">Polar Habitat</div>
-    <div class="challengeBox" id="challenge3"></div>
-    <div class="progressBox" id="progress3">Animals found: 0 / 3</div>
+    <div class="slideTopBar">
+      <div class="titleBox">Polar Habitat</div>
+      <div class="challengeBox" id="challenge3"></div>
+      <div class="progressBox" id="progress3">Animals found: 0 / 3</div>
+    </div>
     <div class="feedbackBox" id="feedback3">Wrong answer - try again</div>
-
     <div class="helperRing" id="ring3"></div>
 
     <img src="assets/polarbear.png" alt="Polar Bear" id="animal-3-Polar Bear" class="animal"
-      style="left: 12%; bottom: 112px;"
+      style="left:12%; bottom:112px;"
       onclick="event.stopPropagation(); handleAnimalTap(3, 'Polar Bear', this, 'Polar bears have thick fur and a layer of fat called blubber to keep them warm. Their big paws help them walk on ice and swim in icy water.', 'assets/polarbear.mp3', 2.0)">
 
     <img src="assets/penguin.png" alt="Penguin" id="animal-3-Penguin" class="animal"
-      style="left: 46%; bottom: 112px;"
+      style="left:46%; bottom:112px;"
       onclick="event.stopPropagation(); handleAnimalTap(3, 'Penguin', this, 'Penguins have waterproof feathers and blubber to stay warm. Their bodies help them swim strongly through cold water.', 'assets/penguin.mp3', 1.9)">
 
     <img src="assets/seal.png" alt="Seal" id="animal-3-Seal" class="animal"
-      style="left: 74%; bottom: 120px;"
+      style="left:74%; bottom:120px;"
       onclick="event.stopPropagation(); handleAnimalTap(3, 'Seal', this, 'Seals have a thick layer of fat that keeps them warm in freezing water. Their flippers help them swim and move on ice.', 'assets/seal.mp3', 1.9)">
 
     <div class="habitatInfo">
       Polar regions are extremely cold and icy. Animals here have thick fur, feathers, or blubber to help them stay warm.
     </div>
   </section>
-
-  <button class="navBtn nav-left" onclick="event.stopPropagation(); prevSlide()">&#10094;</button>
-  <button class="navBtn nav-right" id="nextBtn" onclick="event.stopPropagation(); nextSlide()">&#10095;</button>
 
   <div class="popup" id="popupBox">
     <button class="closeBtn" onclick="closePopup()">✕</button>
@@ -508,22 +743,25 @@
 
   <div class="quizBox" id="quizBox">
     <button class="closeBtn" onclick="closeQuiz()">✕</button>
-    <h3 id="quizTitle">Habitat Check</h3>
+    <h3>Habitat Check</h3>
     <p id="quizQuestion"></p>
     <div class="quizOptions" id="quizOptions"></div>
     <div class="quizResult" id="quizResult"></div>
   </div>
 
-  <div class="unlockBanner" id="unlockBanner"></div>
+  <div class="passBox" id="passBox">
+    <h3 id="passTitle"></h3>
+    <p id="passText"></p>
+    <div style="margin-top:16px;">
+      <button class="mainBtn" onclick="returnToLevelsAfterPass()">Go to Levels</button>
+    </div>
+  </div>
 
   <audio id="bgSound" loop preload="none"></audio>
   <audio id="animalSound" crossorigin="anonymous" preload="none"></audio>
 
   <script>
-    const slides = document.querySelectorAll(".slide");
-    let currentSlide = 0;
-    let audioUnlocked = false;
-
+    const habitatNames = ["Forest", "Desert", "Ocean", "Polar"];
     const ambienceFiles = [
       "assets/forest-ambience.mp3",
       "assets/desert-ambience.mp3",
@@ -531,20 +769,20 @@
       "assets/polar-ambience.mp3"
     ];
 
+    let currentSlide = 0;
+    let audioUnlocked = false;
+    let audioContext, track, gainNode;
+
     const bgSound = document.getElementById("bgSound");
     const animalSound = document.getElementById("animalSound");
     const dimOverlay = document.getElementById("dimOverlay");
-
-    let audioContext;
-    let track;
-    let gainNode;
 
     const slideData = [
       {
         animals: ["Tiger", "Monkey", "Owl"],
         found: new Set(),
         unlocked: true,
-        quizShown: false,
+        completed: false,
         currentQuestion: null,
         questionSolved: false,
         hintTimer: null,
@@ -563,7 +801,7 @@
         animals: ["Camel", "Fennec Fox", "Snake"],
         found: new Set(),
         unlocked: false,
-        quizShown: false,
+        completed: false,
         currentQuestion: null,
         questionSolved: false,
         hintTimer: null,
@@ -582,7 +820,7 @@
         animals: ["Dolphin", "Fish", "Octopus"],
         found: new Set(),
         unlocked: false,
-        quizShown: false,
+        completed: false,
         currentQuestion: null,
         questionSolved: false,
         hintTimer: null,
@@ -598,24 +836,24 @@
         ]
       },
       {
-  animals: ["Polar Bear", "Penguin", "Seal"],
-  found: new Set(),
-  unlocked: false,
-  quizShown: false,
-  currentQuestion: null,
-  questionSolved: false,
-  hintTimer: null,
-  questions: [
-    { text: "Which animal has thick white fur and walks on ice?", answer: "Polar Bear" },
-    { text: "Which animal waddles and cannot fly?", answer: "Penguin" },
-    { text: "Which animal has flippers and rests on ice?", answer: "Seal" }
-  ],
-  endQuestions: [
-    { text: "Which polar animal has thick white fur?", answer: "Polar Bear" },
-    { text: "Which polar animal cannot fly and walks by waddling?", answer: "Penguin" },
-    { text: "Which polar animal has flippers and lives near icy water?", answer: "Seal" }
-  ]
-}
+        animals: ["Polar Bear", "Penguin", "Seal"],
+        found: new Set(),
+        unlocked: false,
+        completed: false,
+        currentQuestion: null,
+        questionSolved: false,
+        hintTimer: null,
+        questions: [
+          { text: "Which animal has thick white fur and walks on ice?", answer: "Polar Bear" },
+          { text: "Which animal waddles and cannot fly?", answer: "Penguin" },
+          { text: "Which animal has flippers and rests on ice?", answer: "Seal" }
+        ],
+        endQuestions: [
+          { text: "Which polar animal has thick white fur?", answer: "Polar Bear" },
+          { text: "Which polar animal cannot fly and walks by waddling?", answer: "Penguin" },
+          { text: "Which polar animal has flippers and lives near icy water?", answer: "Seal" }
+        ]
+      }
     ];
 
     function setupAudioBoost() {
@@ -635,36 +873,99 @@
       if (!audioUnlocked) {
         audioUnlocked = true;
         setupAudioBoost();
-        if (audioContext && audioContext.state === "suspended") {
-          audioContext.resume();
-        }
-        playAmbience(currentSlide);
+        if (audioContext && audioContext.state === "suspended") audioContext.resume();
       }
+    }
+
+    function showOnlyScreen(id) {
+      document.querySelectorAll(".screen").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".slide").forEach(el => el.classList.remove("active"));
+      document.getElementById("homeBtn").style.display = id.startsWith("slide") ? "block" : "none";
+      if (id.startsWith("slide")) {
+        document.getElementById(id).classList.add("active");
+      } else {
+        document.getElementById(id).classList.add("active");
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function goToLevelSelect() {
+      updateLevelCards();
+      stopAllSounds();
+      showOnlyScreen("levelSelect");
+    }
+
+    function openHabitat(index) {
+      if (!slideData[index].unlocked) return;
+      currentSlide = index;
+      showOnlyScreen(`slide${index}`);
+      playAmbience(index);
+      updateProgress(index);
+      setNewChallenge(index);
+    }
+
+    function playAmbience(index) {
+      if (!audioUnlocked) return;
+      bgSound.pause();
+      bgSound.currentTime = 0;
+      bgSound.src = ambienceFiles[index];
+      bgSound.volume = 0.4;
+      bgSound.play().catch(() => {});
+    }
+
+    function stopAllSounds() {
+      bgSound.pause();
+      bgSound.currentTime = 0;
+      animalSound.pause();
+      animalSound.currentTime = 0;
+      if (gainNode) gainNode.gain.value = 1;
+    }
+
+    function updateLevelCards() {
+      slideData.forEach((data, i) => {
+        const card = document.getElementById(`levelCard${i}`);
+        const state = document.getElementById(`levelState${i}`);
+        const lock = document.getElementById(`lock${i}`);
+        if (data.unlocked) {
+          card.classList.remove("locked");
+          state.textContent = data.completed ? "Completed" : "Unlocked";
+          if (lock) lock.style.display = "none";
+        } else {
+          card.classList.add("locked");
+          state.textContent = "Locked";
+          if (lock) lock.style.display = "flex";
+        }
+      });
+    }
+
+    function updateProgress(slideIndex) {
+      document.getElementById(`progress${slideIndex}`).textContent =
+        `Animals found: ${slideData[slideIndex].found.size} / ${slideData[slideIndex].animals.length}`;
     }
 
     function getRandomUnfoundQuestion(slideIndex) {
       const data = slideData[slideIndex];
       const available = data.questions.filter(q => !data.found.has(q.answer));
-      if (available.length === 0) return null;
+      if (!available.length) return null;
       return available[Math.floor(Math.random() * available.length)];
     }
 
     function setNewChallenge(slideIndex) {
       const data = slideData[slideIndex];
-      const challengeBox = document.getElementById(`challenge${slideIndex}`);
-      hideHelperRing(slideIndex);
       clearTimeout(data.hintTimer);
+      hideHelperRing(slideIndex);
       data.questionSolved = false;
 
-      const nextQuestion = getRandomUnfoundQuestion(slideIndex);
-      data.currentQuestion = nextQuestion;
+      const q = getRandomUnfoundQuestion(slideIndex);
+      data.currentQuestion = q;
 
-      if (!nextQuestion) {
-        challengeBox.textContent = "Great exploring! Get ready for the habitat check.";
+      const box = document.getElementById(`challenge${slideIndex}`);
+      if (!q) {
+        box.textContent = "Great! Answer the habitat check to complete this level.";
         return;
       }
 
-      challengeBox.textContent = nextQuestion.text;
+      box.textContent = q.text;
 
       data.hintTimer = setTimeout(() => {
         if (!data.questionSolved && data.currentQuestion) {
@@ -676,16 +977,22 @@
     function showHelperRing(slideIndex, animalName) {
       const ring = document.getElementById(`ring${slideIndex}`);
       const animal = document.getElementById(`animal-${slideIndex}-${animalName}`);
-      if (!ring || !animal) return;
+      const slide = document.getElementById(`slide${slideIndex}`);
+      if (!ring || !animal || !slide) return;
 
-      const animalRect = animal.getBoundingClientRect();
-      const slideRect = document.getElementById(`slide${slideIndex}`).getBoundingClientRect();
+      const a = animal.getBoundingClientRect();
+      const s = slide.getBoundingClientRect();
 
-      const ringLeft = animalRect.left - slideRect.left + animalRect.width + 6;
-      const ringTop = animalRect.top - slideRect.top + (animalRect.height / 2) - 22;
+      let left = a.left - s.left + a.width + 6;
+      let top = a.top - s.top + (a.height / 2) - 22;
 
-      ring.style.left = `${ringLeft}px`;
-      ring.style.top = `${ringTop}px`;
+      if (left > slide.clientWidth - 50) {
+        left = a.left - s.left - 50;
+      }
+      if (top < 0) top = 10;
+
+      ring.style.left = `${left}px`;
+      ring.style.top = `${top}px`;
       ring.style.display = "block";
     }
 
@@ -700,97 +1007,11 @@
       clearTimeout(box._timer);
       box._timer = setTimeout(() => {
         box.style.display = "none";
-      }, 1600);
-    }
-
-    function updateProgress(slideIndex) {
-      const progress = document.getElementById(`progress${slideIndex}`);
-      progress.textContent = `Animals found: ${slideData[slideIndex].found.size} / ${slideData[slideIndex].animals.length}`;
-    }
-
-    function updateNavLock() {
-      const nextBtn = document.getElementById("nextBtn");
-      const nextIndex = currentSlide + 1;
-      if (nextIndex < slideData.length && !slideData[nextIndex].unlocked) {
-        nextBtn.classList.add("locked");
-      } else {
-        nextBtn.classList.remove("locked");
-      }
-    }
-
-    function showUnlockBanner(text) {
-      const banner = document.getElementById("unlockBanner");
-      banner.textContent = text;
-      banner.style.display = "block";
-      setTimeout(() => {
-        banner.style.display = "none";
-      }, 2500);
-    }
-
-    function showSlide(index) {
-      slides.forEach(slide => slide.classList.remove("active"));
-      slides[index].classList.add("active");
-      closePopup(false);
-      closeQuiz(false);
-      currentSlide = index;
-      playAmbience(index);
-      updateProgress(index);
-      updateNavLock();
-      setNewChallenge(index);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function nextSlide() {
-      const nextIndex = currentSlide + 1;
-      if (nextIndex < slideData.length && !slideData[nextIndex].unlocked) {
-        showUnlockBanner("Explore this habitat fully to unlock the next one.");
-        return;
-      }
-      currentSlide = (currentSlide + 1) % slides.length;
-      showSlide(currentSlide);
-    }
-
-    function prevSlide() {
-      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-      showSlide(currentSlide);
-    }
-
-    function playAmbience(index) {
-      if (!audioUnlocked) return;
-      bgSound.pause();
-      bgSound.currentTime = 0;
-      bgSound.src = ambienceFiles[index];
-      bgSound.volume = 0.4;
-      bgSound.play().catch(() => {});
+      }, 1500);
     }
 
     function clearSpotlight() {
-      document.querySelectorAll(".animal.spotlight").forEach(el => {
-        el.classList.remove("spotlight");
-      });
-    }
-
-    function markAnimalFound(slideIndex, animalName) {
-      slideData[slideIndex].found.add(animalName);
-      updateProgress(slideIndex);
-
-      if (slideData[slideIndex].found.size === slideData[slideIndex].animals.length) {
-        hideHelperRing(slideIndex);
-        clearTimeout(slideData[slideIndex].hintTimer);
-
-        if (slideIndex + 1 < slideData.length && !slideData[slideIndex + 1].unlocked) {
-          slideData[slideIndex + 1].unlocked = true;
-          showUnlockBanner("Great exploring! The next habitat is now unlocked.");
-          updateNavLock();
-        }
-
-        if (!slideData[slideIndex].quizShown) {
-          slideData[slideIndex].quizShown = true;
-          setTimeout(() => showQuiz(slideIndex), 600);
-        }
-      } else {
-        setNewChallenge(slideIndex);
-      }
+      document.querySelectorAll(".animal.spotlight").forEach(el => el.classList.remove("spotlight"));
     }
 
     function handleAnimalTap(slideIndex, animalName, element, info, soundFile, boostLevel = 1.8) {
@@ -803,30 +1024,33 @@
       }
 
       data.questionSolved = true;
-      hideHelperRing(slideIndex);
       clearTimeout(data.hintTimer);
+      hideHelperRing(slideIndex);
 
       if (!data.found.has(animalName)) {
-        markAnimalFound(slideIndex, animalName);
+        data.found.add(animalName);
+        updateProgress(slideIndex);
       }
 
-      showAnimalInfo(slideIndex, animalName, info, soundFile, boostLevel, element);
+      showAnimalInfo(animalName, info, soundFile, boostLevel, element);
+
+      if (data.found.size === data.animals.length) {
+        document.getElementById(`challenge${slideIndex}`).textContent =
+          "Well done! Answer the habitat check to complete this level.";
+        setTimeout(() => showQuiz(slideIndex), 500);
+      } else {
+        setTimeout(() => setNewChallenge(slideIndex), 400);
+      }
     }
 
-    function showAnimalInfo(slideIndex, name, info, soundFile, boostLevel = 1.8, element = null) {
-      const popup = document.getElementById("popupBox");
-      const title = document.getElementById("popupTitle");
-      const text = document.getElementById("popupText");
-
+    function showAnimalInfo(name, info, soundFile, boostLevel, element) {
       clearSpotlight();
-      if (element) {
-        element.classList.add("spotlight");
-      }
+      if (element) element.classList.add("spotlight");
 
+      document.getElementById("popupTitle").textContent = name;
+      document.getElementById("popupText").textContent = info;
+      document.getElementById("popupBox").style.display = "block";
       dimOverlay.style.display = "block";
-      title.textContent = name;
-      text.textContent = info;
-      popup.style.display = "block";
 
       animalSound.pause();
       animalSound.currentTime = 0;
@@ -836,95 +1060,100 @@
         bgSound.volume = 0.02;
         animalSound.src = soundFile;
         animalSound.volume = 1.0;
-
-        if (gainNode) {
-          gainNode.gain.value = boostLevel;
-        }
-
+        if (gainNode) gainNode.gain.value = boostLevel;
         animalSound.play().catch(() => {});
-
-        animalSound.onended = function () {
+        animalSound.onended = function() {
           bgSound.volume = 0.4;
-          if (gainNode) {
-            gainNode.gain.value = 1;
-          }
+          if (gainNode) gainNode.gain.value = 1;
         };
       } else {
         bgSound.volume = 0.4;
       }
     }
 
-    function closePopup(resetVolume = true) {
+    function closePopup() {
       document.getElementById("popupBox").style.display = "none";
-      dimOverlay.style.display = "none";
+      if (document.getElementById("quizBox").style.display === "none" &&
+          document.getElementById("passBox").style.display === "none") {
+        dimOverlay.style.display = "none";
+      }
       animalSound.pause();
       animalSound.currentTime = 0;
-      animalSound.onended = null;
+      if (gainNode) gainNode.gain.value = 1;
+      bgSound.volume = 0.4;
       clearSpotlight();
-
-      if (gainNode) {
-        gainNode.gain.value = 1;
-      }
-
-      if (resetVolume) {
-        bgSound.volume = 0.4;
-      }
     }
 
     function showQuiz(slideIndex) {
-      const quizChoices = slideData[slideIndex].endQuestions;
-      const selected = quizChoices[Math.floor(Math.random() * quizChoices.length)];
+      const selected = slideData[slideIndex].endQuestions[
+        Math.floor(Math.random() * slideData[slideIndex].endQuestions.length)
+      ];
 
-      const quizBox = document.getElementById("quizBox");
-      const quizQuestion = document.getElementById("quizQuestion");
-      const quizOptions = document.getElementById("quizOptions");
-      const quizResult = document.getElementById("quizResult");
-
-      dimOverlay.style.display = "block";
-      quizQuestion.textContent = selected.text;
-      quizOptions.innerHTML = "";
-      quizResult.textContent = "";
+      document.getElementById("quizQuestion").textContent = selected.text;
+      document.getElementById("quizResult").textContent = "";
+      const options = document.getElementById("quizOptions");
+      options.innerHTML = "";
 
       slideData[slideIndex].animals.forEach(option => {
         const btn = document.createElement("button");
         btn.textContent = option;
         btn.onclick = function() {
           if (option === selected.answer) {
-            quizResult.textContent = "Correct! Well done.";
-            quizResult.style.color = "#167a34";
+            document.getElementById("quizResult").textContent = "Correct! Level complete.";
+            document.getElementById("quizResult").style.color = "#167a34";
+            setTimeout(() => completeHabitat(slideIndex), 700);
           } else {
-            quizResult.textContent = `Not quite. The correct answer is ${selected.answer}.`;
-            quizResult.style.color = "#9b1c1c";
+            document.getElementById("quizResult").textContent = "Wrong answer - try again";
+            document.getElementById("quizResult").style.color = "#9b1c1c";
           }
-
-          setTimeout(() => {
-            closeQuiz();
-          }, 1200);
         };
-        quizOptions.appendChild(btn);
+        options.appendChild(btn);
       });
 
-      quizBox.style.display = "block";
+      document.getElementById("quizBox").style.display = "block";
+      dimOverlay.style.display = "block";
     }
 
-    function closeQuiz(hideOverlay = true) {
+    function closeQuiz() {
       document.getElementById("quizBox").style.display = "none";
-      if (hideOverlay && document.getElementById("popupBox").style.display === "none") {
+      if (document.getElementById("popupBox").style.display === "none" &&
+          document.getElementById("passBox").style.display === "none") {
         dimOverlay.style.display = "none";
       }
     }
 
+    function completeHabitat(slideIndex) {
+      closeQuiz();
+      slideData[slideIndex].completed = true;
+
+      if (slideIndex + 1 < slideData.length) {
+        slideData[slideIndex + 1].unlocked = true;
+      }
+
+      const name = habitatNames[slideIndex];
+      document.getElementById("passTitle").textContent = `You passed the ${name} habitat!`;
+      document.getElementById("passText").textContent = `You can now go to the next level.`;
+      document.getElementById("passBox").style.display = "block";
+      dimOverlay.style.display = "block";
+      updateLevelCards();
+    }
+
+    function returnToLevelsAfterPass() {
+      document.getElementById("passBox").style.display = "none";
+      dimOverlay.style.display = "none";
+      stopAllSounds();
+      goToLevelSelect();
+    }
+
     document.addEventListener("keydown", function(e) {
-      if (e.key === "ArrowRight") nextSlide();
-      if (e.key === "ArrowLeft") prevSlide();
       if (e.key === "Escape") {
         closePopup();
         closeQuiz();
       }
     });
 
-    window.onload = function () {
-      showSlide(currentSlide);
+    window.onload = function() {
+      updateLevelCards();
     };
   </script>
 </body>
