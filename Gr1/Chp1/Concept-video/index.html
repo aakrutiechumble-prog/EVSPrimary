@@ -1,805 +1,574 @@
-Here’s the **full updated code** with the new warm-up screen.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Living and Non-living Things</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Grade 3 EVS | Living and Non-living Things</title>
 
 <style>
-*{box-sizing:border-box}
-
-body{
-margin:0;
-font-family:Arial,sans-serif;
-height:100svh;
-padding:6px;
-display:flex;
-align-items:center;
-justify-content:center;
-overflow:hidden;
-background:linear-gradient(135deg,#fff4f8,#fffaf0,#effff7,#f3f0ff);
-background-size:300% 300%;
-animation:bgMove 16s ease infinite;
-color:#40394a;
+* {
+  box-sizing: border-box;
 }
 
-@keyframes bgMove{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
+body {
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(135deg, #fdf0e0, #fff8f0);
+  color: #2b2b2b;
+  overflow: hidden;
 }
 
-.shape{
-position:fixed;
-border-radius:50%;
-opacity:.35;
-z-index:1;
-animation:float 12s ease-in-out infinite;
+.screen {
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
 
-.s1{width:120px;height:120px;background:#ffe4ec;top:7%;left:7%}
-.s2{width:95px;height:95px;background:#dff6ff;bottom:10%;left:10%;animation-delay:3s}
-.s3{width:135px;height:135px;background:#e7ffe7;top:13%;right:7%;animation-delay:5s}
-.s4{width:105px;height:105px;background:#fff2cc;bottom:11%;right:13%;animation-delay:2s}
-
-@keyframes float{
-0%{transform:translateY(0)}
-50%{transform:translateY(-22px)}
-100%{transform:translateY(0)}
+.screen.active {
+  display: flex;
 }
 
-#logo{
-position:fixed;
-inset:0;
-background:#fffafc;
-display:flex;
-align-items:center;
-justify-content:center;
-flex-direction:column;
-z-index:50;
+.card {
+  width: min(1100px, 94vw);
+  min-height: 78vh;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 28px;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.12);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.6s ease;
 }
 
-#logo img{width:160px;max-width:70%}
-
-#app{
-display:none;
-width:100%;
-max-width:960px;
-height:96svh;
-background:rgba(255,255,255,.68);
-backdrop-filter:blur(8px);
-border:2px solid rgba(255,255,255,.7);
-border-radius:18px;
-box-shadow:0 10px 28px rgba(0,0,0,.12);
-overflow:hidden;
-position:relative;
-z-index:2;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-header{
-background:linear-gradient(135deg,#ffd6e0,#e0f7ff);
-text-align:center;
-padding:5px;
-color:#444;
+/* Splash */
+#splash {
+  background: linear-gradient(135deg, #fdf0e0, #ffffff);
 }
 
-header h1{
-margin:0;
-font-size:21px;
+.logo-box {
+  text-align: center;
+  animation: popIn 1s ease;
 }
 
-header p{
-margin:2px 0;
-font-size:13px;
+.logo-box img {
+  max-width: 280px;
+  max-height: 180px;
+  object-fit: contain;
 }
 
-.controls button{
-padding:8px 13px;
-font-size:13px;
-margin:2px;
+.logo-box h2 {
+  margin-top: 18px;
+  color: #ae3436;
 }
 
-main{
-height:calc(100% - 86px);
-display:grid;
-grid-template-columns:1fr 1.05fr;
-gap:8px;
-padding:8px;
-overflow:auto;
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.card{
-background:rgba(255,255,255,.82);
-border:2px solid rgba(255,255,255,.9);
-border-radius:14px;
-padding:10px;
-box-shadow:0 6px 14px rgba(0,0,0,.06);
+/* General */
+.badge {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: #f16139;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 14px;
 }
 
-.startCard{
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-text-align:center;
-gap:10px;
+h1 {
+  font-size: clamp(30px, 5vw, 58px);
+  color: #ae3436;
+  margin: 8px 0 16px;
 }
 
-.bigStart{
-font-size:20px;
-padding:15px 28px;
-border-radius:18px;
+h2 {
+  font-size: clamp(26px, 4vw, 44px);
+  color: #ae3436;
+  margin: 10px 0 16px;
 }
 
-#lessonCard{
-display:none;
-flex-direction:column;
+p {
+  font-size: clamp(20px, 2.3vw, 30px);
+  line-height: 1.45;
 }
 
-#progress{
-font-size:13px;
-font-weight:bold;
-color:#7a5c87;
-margin-bottom:5px;
+.small {
+  font-size: clamp(17px, 1.8vw, 22px);
 }
 
-#title{
-font-size:20px;
-margin:0 0 6px;
-color:#5e4b73;
+.visual-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 28px;
+  justify-content: center;
 }
 
-#text{
-font-size:15px;
-line-height:1.35;
-margin:0;
-color:#4c4c5c;
+.item {
+  width: 145px;
+  min-height: 130px;
+  border-radius: 22px;
+  background: #fdf0e0;
+  border: 3px solid #f7cbb5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: floaty 2.2s ease-in-out infinite;
 }
 
-.visual{
-display:flex;
-justify-content:center;
-align-items:center;
-background:rgba(240,255,247,.82);
-min-height:220px;
-overflow:hidden;
-position:relative;
-padding:8px;
+.item:nth-child(even) {
+  animation-delay: 0.3s;
 }
 
-#visualArea{
-width:100%;
-min-height:210px;
-display:flex;
-justify-content:center;
-align-items:center;
-overflow:hidden;
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-button{
-border:none;
-background:#ffb5c5;
-color:#333;
-padding:8px 12px;
-border-radius:10px;
-font-size:13px;
-font-weight:bold;
-cursor:pointer;
+.icon {
+  font-size: 54px;
 }
 
-button:hover{background:#ffc9d6}
-
-.sceneGrid{
-width:100%;
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-align-items:center;
+.label {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 8px;
+  text-align: center;
 }
 
-.box{
-background:rgba(255,255,255,.88);
-border:2px solid rgba(255,255,255,.9);
-border-radius:18px;
-padding:10px;
-text-align:center;
-box-shadow:0 6px 14px rgba(0,0,0,.06);
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
 }
 
-.box h3{
-margin:0 0 8px;
-font-size:16px;
-color:#5e4b73;
+.box {
+  background: #fdf0e0;
+  border-radius: 24px;
+  padding: 22px;
+  border: 3px solid #f7cbb5;
 }
 
-.iconRow{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:8px;
+.box h3 {
+  color: #ae3436;
+  font-size: 28px;
+  margin: 0 0 12px;
 }
 
-.icon{
-font-size:36px;
-background:#fff7dc;
-border:2px solid #ffe6a7;
-border-radius:18px;
-padding:10px;
-min-width:62px;
-animation:pop .55s ease forwards;
+.list {
+  font-size: clamp(18px, 2vw, 25px);
+  line-height: 1.6;
 }
 
-.living{background:#e7ffe7;border-color:#c9f2c9}
-.nonliving{background:#ffe4ec;border-color:#ffc9d6}
-.natural{background:#e0f7ff;border-color:#b8ecff}
-.manmade{background:#fff2cc;border-color:#ffe6a7}
-
-@keyframes pop{
-0%{opacity:0;transform:translateY(8px) scale(.8)}
-100%{opacity:1;transform:translateY(0) scale(1)}
+.nav {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.featureVisual{
-width:100%;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:10px;
+button {
+  border: none;
+  padding: 14px 22px;
+  border-radius: 999px;
+  background: #ae3436;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.bigIcon{
-font-size:68px;
-background:#fff;
-border-radius:24px;
-padding:15px 24px;
-box-shadow:0 8px 18px rgba(0,0,0,.08);
-animation:floatSmall 2s ease-in-out infinite;
+button:hover {
+  background: #f16139;
 }
 
-@keyframes floatSmall{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-8px)}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
-.arrowFlow{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:8px;
-font-size:34px;
-font-weight:bold;
-flex-wrap:wrap;
+.progress {
+  font-size: 17px;
+  font-weight: bold;
+  color: #ae3436;
 }
 
-.pill{
-display:inline-block;
-padding:10px 14px;
-border-radius:18px;
-font-weight:bold;
-font-size:18px;
-background:#fff7dc;
-border:2px solid #ffe6a7;
-animation:pop .55s ease forwards;
-text-align:center;
+.quiz-options {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 24px;
 }
 
-.compareTable{
-width:100%;
-max-width:420px;
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
+.quiz-options button {
+  background: white;
+  color: #ae3436;
+  border: 3px solid #ae3436;
+  min-width: 180px;
 }
 
-.compareTable .box{
-font-size:15px;
-line-height:1.6;
+.feedback {
+  margin-top: 20px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #ae3436;
 }
 
-#qbox{
-display:none;
-margin-top:8px;
-padding:8px;
-background:#fff7dc;
-border:2px solid #ffe6a7;
-border-radius:12px;
+.pill {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: white;
+  border: 2px solid #f16139;
+  color: #ae3436;
+  margin: 6px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-#qbox p{
-font-size:16px;
-font-weight:bold;
-margin:4px 0;
+.scene-art {
+  position: absolute;
+  right: -30px;
+  bottom: -30px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: rgba(241, 97, 57, 0.14);
 }
 
-.optionBtn{
-display:inline-block;
-margin:6px 5px 0 0;
-font-size:14px;
-}
+@media (max-width: 760px) {
+  .card {
+    min-height: 86vh;
+    padding: 22px;
+  }
 
-.correct{color:#4f9b72;font-weight:bold}
-.wrong{color:#c25f5f;font-weight:bold}
+  .two-col {
+    grid-template-columns: 1fr;
+  }
 
-.star{
-position:fixed;
-width:14px;
-height:14px;
-background:#ffd86b;
-clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-animation:fall 1.5s linear forwards;
-z-index:99;
-}
+  .item {
+    width: 120px;
+    min-height: 110px;
+  }
 
-@keyframes fall{
-to{transform:translateY(100vh) rotate(360deg);opacity:0}
-}
+  .icon {
+    font-size: 42px;
+  }
 
-@media(max-width:700px){
-main{
-grid-template-columns:1fr;
-height:calc(100% - 92px);
-}
+  .nav {
+    left: 18px;
+    right: 18px;
+  }
 
-.visual{
-min-height:220px;
-}
-
-#visualArea{
-min-height:200px;
-}
-
-header h1{font-size:19px}
-#title{font-size:18px}
-#text{font-size:14px}
-
-.icon{font-size:30px;min-width:54px;padding:8px}
-.bigIcon{font-size:52px}
-.sceneGrid{gap:6px}
-.box{padding:8px}
-.pill{font-size:15px;padding:8px 10px}
+  button {
+    padding: 12px 16px;
+    font-size: 16px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="shape s1"></div>
-<div class="shape s2"></div>
-<div class="shape s3"></div>
-<div class="shape s4"></div>
+<!-- Splash Screen -->
+<section class="screen active" id="splash">
+  <div class="logo-box">
+    <img src="assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';">
+    <h1 id="logoFallback" style="display:none;">Innovine</h1>
+    <h2>Learning Begins...</h2>
+  </div>
+</section>
 
-<div id="logo">
-<img src="assets/innovine-logo.png" alt="Innovine Logo">
-<h3>EVS Lesson</h3>
-</div>
+<!-- Slide Container -->
+<section class="screen" id="lesson">
+  <div class="card">
+    <div class="badge" id="badge">Grade 3 EVS</div>
+    <h1 id="title"></h1>
+    <p id="content"></p>
+    <div id="visuals" class="visual-row"></div>
+    <div id="extra"></div>
+    <div class="scene-art"></div>
 
-<div id="app">
-
-<header>
-<h1>Living and Non-living Things</h1>
-<p>Grade 3 EVS</p>
-<div class="controls">
-<button onclick="start()">▶ Start Lesson</button>
-<button onclick="toggleVoice()">Voice On / Off</button>
-</div>
-</header>
-
-<main>
-
-<div class="card startCard" id="startCard">
-<h2>Ready to begin?</h2>
-<p>Tap the button below to start the voice lesson.</p>
-<button class="bigStart" onclick="start()">▶ Start Lesson</button>
-</div>
-
-<div class="card" id="lessonCard">
-<div id="progress"></div>
-<h2 id="title"></h2>
-<p id="text"></p>
-
-<div id="qbox">
-<p id="q"></p>
-<div id="options"></div>
-<p id="feedback"></p>
-</div>
-</div>
-
-<div class="card visual">
-<div id="visualArea"></div>
-</div>
-
-</main>
-</div>
+    <div class="nav">
+      <button id="prevBtn" onclick="prevSlide()">Back</button>
+      <span class="progress" id="progress"></span>
+      <button id="nextBtn" onclick="nextSlide()">Next</button>
+    </div>
+  </div>
+</section>
 
 <script>
-let i=0;
-let voiceOn=true;
-let timer=null;
-let current=null;
-let quizIndex=0;
-let score=0;
-
-const quizItems=[
-{item:"Tiger", icon:"🐯", answer:"Living"},
-{item:"Clock", icon:"🕒", answer:"Non-living"},
-{item:"Tree", icon:"🌳", answer:"Living"},
-{item:"Chair", icon:"🪑", answer:"Non-living"}
+const slides = [
+  {
+    badge: "Warm-up",
+    title: "Look Around!",
+    content: "Look around your room. You may see a plant, a bag, a table, a pet, a book or a toy. Are all of them alive?",
+    visuals: [
+      ["🌱", "Plant"], ["🎒", "Bag"], ["🐱", "Pet"], ["📘", "Book"], ["🧸", "Toy"]
+    ]
+  },
+  {
+    badge: "Concept 1",
+    title: "Living Things",
+    content: "Things that are alive are called living things. People, animals and plants are living things.",
+    visuals: [
+      ["👧", "Child"], ["🐯", "Tiger"], ["🐟", "Fish"], ["🐦", "Bird"], ["🌳", "Tree"]
+    ]
+  },
+  {
+    badge: "Concept 2",
+    title: "Non-living Things",
+    content: "Things that are not alive are called non-living things. They do not eat, breathe, grow, feel or reproduce.",
+    visuals: [
+      ["🪨", "Rock"], ["🚗", "Car"], ["💻", "Computer"], ["🪑", "Chair"], ["☀️", "Sun"]
+    ]
+  },
+  {
+    badge: "Types",
+    title: "Two Types of Non-living Things",
+    content: "Some non-living things are found in nature. Some are made by people.",
+    extra: `
+      <div class="two-col">
+        <div class="box">
+          <h3>Natural Non-living Things</h3>
+          <div class="pill">Sun</div><div class="pill">Moon</div><div class="pill">Rocks</div><div class="pill">Mountains</div>
+        </div>
+        <div class="box">
+          <h3>Man-made Non-living Things</h3>
+          <div class="pill">Table</div><div class="pill">Chair</div><div class="pill">Car</div><div class="pill">Computer</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: "Feature 1",
+    title: "Living Things Grow",
+    content: "All living things grow and change. A baby grows into an adult. A seed grows into a plant. A puppy grows into a dog.",
+    visuals: [
+      ["👶➡️🧑", "Baby to Adult"], ["🌰➡️🌳", "Seed to Tree"], ["🐶➡️🐕", "Puppy to Dog"]
+    ]
+  },
+  {
+    badge: "Feature 2",
+    title: "Living Things Move",
+    content: "Living things can move on their own. People walk, birds fly, fish swim and snakes crawl. Plants also show movement, such as roots growing down and leaves growing upwards.",
+    visuals: [
+      ["🏃", "Run"], ["🐦", "Fly"], ["🐟", "Swim"], ["🐍", "Crawl"], ["🌻", "Turns to Sun"]
+    ]
+  },
+  {
+    badge: "Remember",
+    title: "Does a Car Move on its Own?",
+    content: "A car can move from one place to another, but it cannot move on its own. A person must start and drive it. So, a car is non-living.",
+    visuals: [
+      ["🚗", "Car"], ["👤", "Driver"], ["❌", "Not Living"]
+    ]
+  },
+  {
+    badge: "Feature 3",
+    title: "Living Things Need Food",
+    content: "All living things need food to grow and get energy. Animals and people eat food. Plants make their own food using sunlight, water and carbon dioxide.",
+    visuals: [
+      ["🍎", "Food"], ["🐕", "Animal Eats"], ["☀️💧🌿", "Plant Makes Food"]
+    ]
+  },
+  {
+    badge: "Feature 4",
+    title: "Living Things Breathe",
+    content: "Living things breathe. People and land animals breathe through lungs. Fish breathe through gills. Plants breathe through tiny holes called stomata.",
+    visuals: [
+      ["🫁", "Lungs"], ["🐟", "Gills"], ["🍃", "Stomata"]
+    ]
+  },
+  {
+    badge: "Feature 5",
+    title: "Living Things Feel",
+    content: "Living things can feel. We feel heat, cold and pain. Animals also feel. Some plants, like the touch-me-not plant, show feeling by closing their leaves when touched.",
+    visuals: [
+      ["✋", "Touch"], ["🐈", "Animal Feels"], ["🌿", "Touch-me-not"]
+    ]
+  },
+  {
+    badge: "Feature 6",
+    title: "Living Things Have a Lifespan",
+    content: "Every living thing lives for a certain time. This is called its lifespan. A housefly may live for a few weeks, while a tortoise can live for more than 100 years.",
+    visuals: [
+      ["🪰", "Housefly"], ["🐢", "Tortoise"], ["⏳", "Lifespan"]
+    ]
+  },
+  {
+    badge: "Feature 7",
+    title: "Living Things Reproduce",
+    content: "Living things reproduce. This means they can have young ones or make new living things. Dogs give birth to puppies. Ducks lay eggs. Plants grow from seeds.",
+    visuals: [
+      ["🐕🐶", "Puppies"], ["🦆🥚", "Eggs"], ["🌱", "Seedling"]
+    ]
+  },
+  {
+    badge: "Compare",
+    title: "Living vs Non-living",
+    content: "Let us compare them.",
+    extra: `
+      <div class="two-col">
+        <div class="box">
+          <h3>Living Things</h3>
+          <div class="list">
+            ✓ Need food, air and water<br>
+            ✓ Grow<br>
+            ✓ Move on their own<br>
+            ✓ Feel<br>
+            ✓ Have a lifespan<br>
+            ✓ Reproduce
+          </div>
+        </div>
+        <div class="box">
+          <h3>Non-living Things</h3>
+          <div class="list">
+            ✗ Do not need food, air and water<br>
+            ✗ Do not grow<br>
+            ✗ Cannot move on their own<br>
+            ✗ Do not feel<br>
+            ✗ Do not have a lifespan<br>
+            ✗ Do not reproduce
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: "Quick Quiz",
+    title: "Is a Tree Living or Non-living?",
+    content: "Choose the correct answer.",
+    quiz: {
+      options: ["Living", "Non-living"],
+      answer: "Living",
+      feedback: "Correct! A tree grows, breathes, needs food and reproduces."
+    },
+    visuals: [["🌳", "Tree"]]
+  },
+  {
+    badge: "Quick Quiz",
+    title: "Is an Alarm Clock Living or Non-living?",
+    content: "Choose the correct answer.",
+    quiz: {
+      options: ["Living", "Non-living"],
+      answer: "Non-living",
+      feedback: "Correct! An alarm clock can ring, but it does not grow, breathe, feel or reproduce."
+    },
+    visuals: [["⏰", "Alarm Clock"]]
+  },
+  {
+    badge: "Recap",
+    title: "What Did We Learn?",
+    content: "Living things are alive. Non-living things are not alive. Living things grow, move, need food, breathe, feel, have a lifespan and reproduce.",
+    visuals: [
+      ["🌱", "Grow"], ["🏃", "Move"], ["🍎", "Food"], ["🫁", "Breathe"], ["❤️", "Feel"], ["🐣", "Reproduce"]
+    ]
+  },
+  {
+    badge: "Final Task",
+    title: "Your Turn, Little Scientist!",
+    content: "Look around your home, classroom or garden. Find five living things and five non-living things.",
+    visuals: [
+      ["🔍", "Observe"], ["🌍", "Explore"], ["📝", "Make a List"]
+    ]
+  }
 ];
 
-const steps=[
-{
-t:"Warm-up question",
-d:"Look around you. What do you see near you? Maybe a bag, a plant, a pencil, or a person. Do all these things behave in the same way?",
-visual:"warmup",
-pause:2200
-},
-{
-t:"Living and non-living",
-d:"Things that are alive are called living things. Things that are not alive are called non-living things.",
-visual:"labels"
-},
-{
-t:"Living things",
-d:"People, animals, and plants are living things. They are alive, just like you.",
-visual:"living"
-},
-{
-t:"Non-living things",
-d:"Things like tables, cars, rocks, and the sun are non-living. They are not alive.",
-visual:"nonliving"
-},
-{
-t:"Types of non-living things",
-d:"Non-living things can be natural or man-made.",
-visual:"types"
-},
-{
-t:"Living things grow",
-d:"Living things grow. A baby grows into an adult. A seed grows into a plant. But a table does not grow.",
-visual:"grow"
-},
-{
-t:"Living things move",
-d:"Living things can move on their own. Birds fly. Fish swim. Children run. Plants also move slowly.",
-visual:"move"
-},
-{
-t:"Important point",
-d:"A car moves, but only when someone starts it. So, a car is non-living.",
-visual:"car"
-},
-{
-t:"Living things need food",
-d:"Living things need food to live and grow. Animals eat food. Plants make their own food using sunlight, water, and air.",
-visual:"food"
-},
-{
-t:"Living things breathe",
-d:"Living things breathe. Humans use lungs. Fish use gills. Plants breathe through tiny holes in their leaves.",
-visual:"breathe"
-},
-{
-t:"Living things feel",
-d:"Living things can feel heat, cold, and pain. Even some plants respond when touched. A chair does not feel anything.",
-visual:"feel"
-},
-{
-t:"Living things have a lifespan",
-d:"Living things live for a certain time. This is called their lifespan. A fly lives for a few weeks. A tortoise can live for over 100 years.",
-visual:"lifespan"
-},
-{
-t:"Living things reproduce",
-d:"Living things can reproduce. Dogs have puppies. Birds lay eggs. Plants grow from seeds.",
-visual:"reproduce"
-},
-{
-t:"Quick recap",
-d:"Living things grow, move, need food, breathe, feel, have a lifespan, and reproduce. Non-living things do not do these.",
-visual:"recap"
-},
-{
-t:"Mini quiz",
-d:"Let us test you. Choose Living or Non-living for each item.",
-visual:"quiz",
-quiz:true
-},
-{
-t:"Real-life connect",
-d:"Now look around you. Can you find 5 living things and 5 non-living things? You are now a smart observer.",
-visual:"closure"
-}
-];
+let currentSlide = 0;
 
-function speak(text,cb){
-clearTimeout(timer);
-speechSynthesis.cancel();
+setTimeout(() => {
+  document.getElementById("splash").classList.remove("active");
+  document.getElementById("lesson").classList.add("active");
+  renderSlide();
+}, 5000);
 
-if(!voiceOn){
-setTimeout(cb,2400);
-return;
+function renderSlide() {
+  const slide = slides[currentSlide];
+
+  document.getElementById("badge").textContent = slide.badge;
+  document.getElementById("title").textContent = slide.title;
+  document.getElementById("content").textContent = slide.content;
+  document.getElementById("progress").textContent = `${currentSlide + 1} / ${slides.length}`;
+
+  const visuals = document.getElementById("visuals");
+  visuals.innerHTML = "";
+
+  if (slide.visuals) {
+    slide.visuals.forEach(v => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `<div class="icon">${v[0]}</div><div class="label">${v[1]}</div>`;
+      visuals.appendChild(div);
+    });
+  }
+
+  const extra = document.getElementById("extra");
+  extra.innerHTML = slide.extra || "";
+
+  if (slide.quiz) {
+    const quizBox = document.createElement("div");
+    quizBox.className = "quiz-options";
+
+    slide.quiz.options.forEach(option => {
+      const btn = document.createElement("button");
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(option, slide.quiz.answer, slide.quiz.feedback);
+      quizBox.appendChild(btn);
+    });
+
+    const feedback = document.createElement("div");
+    feedback.className = "feedback";
+    feedback.id = "feedback";
+
+    extra.appendChild(quizBox);
+    extra.appendChild(feedback);
+  }
+
+  document.getElementById("prevBtn").disabled = currentSlide === 0;
+  document.getElementById("nextBtn").textContent = currentSlide === slides.length - 1 ? "Restart" : "Next";
 }
 
-let u=new SpeechSynthesisUtterance(text);
-u.rate=.78;
-u.pitch=1;
-u.volume=1;
-u.lang="en-US";
-u.onend=()=>setTimeout(cb,1000);
-u.onerror=()=>setTimeout(cb,1200);
-speechSynthesis.speak(u);
+function checkAnswer(selected, answer, feedbackText) {
+  const feedback = document.getElementById("feedback");
+  if (selected === answer) {
+    feedback.textContent = "✅ " + feedbackText;
+  } else {
+    feedback.textContent = "Try again. Look carefully at the features.";
+  }
 }
 
-function sound(type){
-try{
-let ctx=new (window.AudioContext||window.webkitAudioContext)();
-let osc=ctx.createOscillator();
-let gain=ctx.createGain();
-osc.connect(gain);
-gain.connect(ctx.destination);
-osc.frequency.value=type==="correct"?720:type==="tick"?520:220;
-gain.gain.value=.05;
-osc.start();
-osc.stop(ctx.currentTime+.13);
-}catch(e){}
+function nextSlide() {
+  if (currentSlide === slides.length - 1) {
+    currentSlide = 0;
+  } else {
+    currentSlide++;
+  }
+  renderSlide();
 }
 
-function renderVisual(s){
-let v=document.getElementById("visualArea");
-v.innerHTML="";
-
-if(s.visual==="warmup"){
-v.innerHTML=`
-<div class="featureVisual">
-  <div class="bigIcon">👀</div>
-  <div class="iconRow">
-    <div class="icon">🎒</div>
-    <div class="icon">🌱</div>
-    <div class="icon">✏️</div>
-    <div class="icon">🧒</div>
-  </div>
-  <span class="pill">Do all things behave the same way?</span>
-</div>`;
+function prevSlide() {
+  if (currentSlide > 0) {
+    currentSlide--;
+    renderSlide();
+  }
 }
-
-if(s.visual==="labels"){
-v.innerHTML=`
-<div class="sceneGrid">
-<div class="box living"><h3>Living Things</h3><div class="bigIcon">🌱</div></div>
-<div class="box nonliving"><h3>Non-living Things</h3><div class="bigIcon">🪨</div></div>
-</div>`;
-}
-
-if(s.visual==="living"){
-v.innerHTML=`<div class="iconRow">
-<div class="icon living">🧒</div><div class="icon living">🐦</div><div class="icon living">🐟</div><div class="icon living">🌳</div>
-</div>`;
-}
-
-if(s.visual==="nonliving"){
-v.innerHTML=`<div class="iconRow">
-<div class="icon nonliving">🪑</div><div class="icon nonliving">🚗</div><div class="icon nonliving">🪨</div><div class="icon nonliving">☀️</div>
-</div>`;
-}
-
-if(s.visual==="types"){
-v.innerHTML=`
-<div class="sceneGrid">
-<div class="box natural"><h3>Natural</h3><div class="iconRow">
-<div class="icon natural">☀️</div><div class="icon natural">🌙</div><div class="icon natural">⛰️</div><div class="icon natural">🪨</div>
-</div></div>
-<div class="box manmade"><h3>Man-made</h3><div class="iconRow">
-<div class="icon manmade">🪑</div><div class="icon manmade">🚗</div><div class="icon manmade">💻</div><div class="icon manmade">🏢</div>
-</div></div>
-</div>`;
-}
-
-if(s.visual==="grow"){
-v.innerHTML=`<div class="featureVisual">
-<div class="arrowFlow"><span>👶</span><span>→</span><span>🧒</span><span>→</span><span>🧑</span></div>
-<div class="arrowFlow"><span>🌰</span><span>→</span><span>🌱</span><span>→</span><span>🌳</span></div>
-<span class="pill">🪑 Table: does not grow</span>
-</div>`;
-}
-
-if(s.visual==="move"){
-v.innerHTML=`<div class="iconRow">
-<div class="icon living">🐦</div><div class="icon living">🐟</div><div class="icon living">🏃</div><div class="icon living">🌻</div>
-</div>`;
-}
-
-if(s.visual==="car"){
-v.innerHTML=`<div class="featureVisual">
-<div class="bigIcon">🚗</div>
-<span class="pill">Moves only when started</span>
-<span class="pill nonliving">So, it is non-living</span>
-</div>`;
-}
-
-if(s.visual==="food"){
-v.innerHTML=`<div class="iconRow">
-<div class="icon living">🧒🍎</div><div class="icon living">🐶🍖</div><div class="icon living">🌱☀️</div><div class="icon nonliving">🧸</div>
-</div>`;
-}
-
-if(s.visual==="breathe"){
-v.innerHTML=`<div class="iconRow">
-<div class="icon living">🫁</div><div class="icon living">🐟</div><div class="icon living">🍃</div>
-</div>`;
-}
-
-if(s.visual==="feel"){
-v.innerHTML=`<div class="iconRow">
-<div class="icon living">🔥😮</div><div class="icon living">🐶🥶</div><div class="icon living">🌿</div><div class="icon nonliving">🪑</div>
-</div>`;
-}
-
-if(s.visual==="lifespan"){
-v.innerHTML=`<div class="featureVisual">
-<div class="arrowFlow"><span>🪰</span><span class="pill">few weeks</span></div>
-<div class="arrowFlow"><span>🐢</span><span class="pill">100+ years</span></div>
-</div>`;
-}
-
-if(s.visual==="reproduce"){
-v.innerHTML=`<div class="iconRow">
-<div class="icon living">🐶🐶</div><div class="icon living">🥚🐣</div><div class="icon living">🌰🌱</div><div class="icon nonliving">🧸</div>
-</div>`;
-}
-
-if(s.visual==="recap"){
-v.innerHTML=`
-<div class="compareTable">
-<div class="box living"><h3>Living</h3>✔ Grow<br>✔ Move<br>✔ Need food<br>✔ Breathe<br>✔ Feel<br>✔ Lifespan<br>✔ Reproduce</div>
-<div class="box nonliving"><h3>Non-living</h3>✘ Do not grow<br>✘ Do not breathe<br>✘ Do not feel<br>✘ Do not reproduce</div>
-</div>`;
-}
-
-if(s.visual==="quiz"){
-showQuizVisual();
-}
-
-if(s.visual==="closure"){
-v.innerHTML=`
-<div class="sceneGrid">
-<div class="box living"><h3>Find 5 living things</h3><div class="bigIcon">🌳</div></div>
-<div class="box nonliving"><h3>Find 5 non-living things</h3><div class="bigIcon">📘</div></div>
-</div>`;
-}
-
-sound("tick");
-}
-
-function showQuizVisual(){
-let item=quizItems[quizIndex];
-document.getElementById("visualArea").innerHTML=`
-<div class="featureVisual">
-<div class="bigIcon">${item.icon}</div>
-<span class="pill">${item.item}</span>
-</div>`;
-}
-
-function play(){
-if(i>=steps.length)return;
-
-let s=steps[i];
-
-document.getElementById("startCard").style.display="none";
-document.getElementById("lessonCard").style.display="flex";
-document.getElementById("progress").innerText=`Step ${i+1} of ${steps.length}`;
-document.getElementById("title").innerText=s.t;
-document.getElementById("text").innerText=s.d;
-document.getElementById("feedback").innerText="";
-document.getElementById("options").innerHTML="";
-
-renderVisual(s);
-
-if(s.quiz){
-quizIndex=0;
-score=0;
-current=s;
-showQuizQuestion();
-speak(s.d,()=>{});
-return;
-}
-
-document.getElementById("qbox").style.display="none";
-
-speak(s.d,()=>{
-if(s.pause){
-timer=setTimeout(()=>{i++;play();},s.pause);
-}else{
-i++;
-play();
-}
-});
-}
-
-function showQuizQuestion(){
-let item=quizItems[quizIndex];
-showQuizVisual();
-
-document.getElementById("qbox").style.display="block";
-document.getElementById("q").innerText=`${item.item}: Living or Non-living?`;
-
-["Living","Non-living"].forEach(opt=>{
-let b=document.createElement("button");
-b.className="optionBtn";
-b.innerText=opt;
-b.onclick=()=>checkQuiz(opt);
-document.getElementById("options").appendChild(b);
-});
-}
-
-function checkQuiz(value){
-let item=quizItems[quizIndex];
-let feedback=document.getElementById("feedback");
-
-if(value===item.answer){
-feedback.innerText="Correct!";
-feedback.className="correct";
-score++;
-sound("correct");
-confetti();
-}else{
-feedback.innerText=`Not quite. ${item.item} is ${item.answer}.`;
-feedback.className="wrong";
-sound("wrong");
-}
-
-quizIndex++;
-
-setTimeout(()=>{
-document.getElementById("feedback").innerText="";
-document.getElementById("options").innerHTML="";
-
-if(quizIndex<quizItems.length){
-showQuizQuestion();
-}else{
-document.getElementById("q").innerText=`Quiz complete! Score: ${score}/${quizItems.length}`;
-setTimeout(()=>{
-i++;
-play();
-},1800);
-}
-},1200);
-}
-
-function confetti(){
-for(let k=0;k<20;k++){
-let d=document.createElement("div");
-d.className="star";
-d.style.left=Math.random()*100+"vw";
-d.style.top="-20px";
-d.style.animationDelay=Math.random()*.4+"s";
-document.body.appendChild(d);
-setTimeout(()=>d.remove(),1600);
-}
-}
-
-function start(){
-speechSynthesis.cancel();
-clearTimeout(timer);
-i=0;
-quizIndex=0;
-score=0;
-play();
-}
-
-function toggleVoice(){
-voiceOn=!voiceOn;
-speechSynthesis.cancel();
-}
-
-setTimeout(()=>{
-document.getElementById("logo").style.display="none";
-document.getElementById("app").style.display="block";
-},5000);
 </script>
 
 </body>
 </html>
-```
